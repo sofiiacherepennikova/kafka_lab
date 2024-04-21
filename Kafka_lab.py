@@ -201,7 +201,7 @@ def main():
         # 3) DO SOME MACHINE LEARNING TO PREDICT TRACK POPULARITY 
         # 3) PRODUCE THE PREDICTED DATA TO 'ml_results' KAFKA TOPIC
         ml_consumer = Consumer('raw_data', 'ml_consumer', 2400000)
-        general_dataframe = visualize_consumer.df_prepare()        
+        general_dataframe = ml_consumer.df_prepare()        
         ml_consumer.popularity_prediction(general_dataframe, 'ml_results')
 
 
