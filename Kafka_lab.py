@@ -10,6 +10,8 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error
+import matplotlib.pyplot as plt
 
 
 class Producer:
@@ -131,13 +133,14 @@ class Consumer:
         working_df = working_df.dropna()
         working_df = working_df[['artists', 'popularity', 'track_genre', 'danceability', 'loudness']].copy()
         working_df = pd.get_dummies(working_df, columns=['artists', 'track_genre'])
-        # Select ratio
+
+        # MANUALLY SPLITTING INTO TRAIN AND VALIDATE DATASETS
+
         ratio = 0.05
         
         total_rows = working_df.shape[0]
         train_size = int(total_rows*ratio)
         
-        # Split data into test and train
         train = working_df[0:train_size]
         validate = working_df[train_size:(2*train_size)]
         test = working_df[(2*train_size):]
@@ -148,12 +151,24 @@ class Consumer:
         X_validate = validate.drop(columns=['popularity'])
         y_validate = validate['popularity']
     
+
         model = RandomForestRegressor()
         model.fit(X_train, y_train)
 
-        y_pred1 = model.predict(X_validate)
+        y_pred = model.predict(X_validate)
+
+
+        # VISUALIZATION OF RESULTS
+
+        # mae = mean_absolute_error(y_validate, y_pred)
+        # print(f'Mean Absolute Error: {mae}')
+        # plt.scatter(y_validate, y_pred)
+        # plt.xlabel('True Popularity')
+        # plt.ylabel('Predicted Popularity')
+        # plt.title('True vs Predicted Popularity of Spotify Tracks')
+        # plt.show()
         
-        prediction_df = pd.DataFrame(y_pred1)
+        prediction_df = pd.DataFrame(y_pred)
         # SOME DATAFRAME PROCESSING + ML LOGIC. As the result we suppose to have 'prediction_df' data frame: [track_id predicted_popularity original_popularity prediction_error]. Of course, you can choose any output you want!!
 
         # PRODUCE THE prediction output dataframe into 'prediction_data' TOPIC
